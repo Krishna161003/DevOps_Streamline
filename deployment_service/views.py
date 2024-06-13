@@ -458,7 +458,7 @@ def docker_deploy(request):
     if request.method == "POST":
         username = request.POST.get('username')
         api_token = request.POST.get('apitoken')
-        server_url = request.POST.get('jenkins-ip')
+        server_ip = request.POST.get('jenkins-ip')
         job_name = request.POST.get('job-name')
         project_name = request.POST.get('prj-name')
         github_url = request.POST.get('githubURL')
@@ -548,7 +548,7 @@ def docker_deploy(request):
             <disabled>false</disabled>
         </flow-definition>
         """
-
+        server_url = f"http://{server_ip}:8080"
         jenkins_server = jenkins.Jenkins(server_url, username=username, password=api_token)
         try:
             # Create or update the pipeline job
@@ -609,11 +609,11 @@ def docker_deploy(request):
 
         prj_nginx_config = f"""
         server {{
-            listen 80;
-            server_name your_server_ip;  # Replace 'your_server_ip' with the actual server IP
+            listen {port_number};
+            server_name {server_ip};  # Replace 'your_server_ip' with the actual server IP
 
             location / {{
-                proxy_pass http://127.0.0.1:{port_number};
+                proxy_pass http://127.0.0.1:8000;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -674,6 +674,7 @@ def docker_deploy(request):
         return JsonResponse(response_data)
 
     return JsonResponse({"status": "error", "message": "Invalid request method"})
+
 
 
 
