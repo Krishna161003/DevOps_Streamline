@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Reports</title>
+        <script src="{% static '/js/charts.js/' %}"></script>
+        <link href="{% static '/administration/css/styles.css' %}" rel="stylesheet" />
+        <link href="/startbootstrap-sb-admin-gh-pages/css/styles.css" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <style>
+        /* body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        } */
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 600px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            margin: 0;
+        }
+
+        .card-body ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .card-body ul li {
+            background-color: #f9f9f9;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+            .Btn {
+                padding: 10px;
+                width: 50px;
+                height: 50px;
+                border: none;
+                border-radius: 50%;
+                background-color: white;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                position: relative;
+                transition-duration: 0.3s;
+                }
+
+                .svgIcon {
+                fill: #2196f3;
+                }
+
+                .icon2 {
+                width: 18px;
+                height: 5px;
+                border-bottom: 2px solid #2196f3;
+                border-left: 2px solid #2196f3;
+                border-right: 2px solid #2196f3;
+                }
+
+                .tooltip {
+                position: absolute;
+                top: -50px;
+                opacity: 0;
+                background-color: rgb(12, 12, 12);
+                color: white;
+                padding: 10px 10px;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition-duration: 0.2s;
+                pointer-events: none;
+                letter-spacing: 0.5px;
+                }
+
+                .tooltip::before {
+                position: absolute;
+                content: "";
+                width: 10px;
+                height: 10px;
+                background-color: rgb(12, 12, 12);
+                background-size: 1000%;
+                background-position: center;
+                transform: rotate(45deg);
+                bottom: -5%;
+                transition-duration: 0.3s;
+                }
+
+                .Btn:hover .tooltip {
+                opacity: 1;
+                transition-duration: 0.3s;
+                }
+
+                .Btn:hover {
+                background-color: #01579b;
+                transition-duration: 0.3s;
+                }
+
+                .Btn:hover .icon2 {
+                border-bottom: 2px solid white;
+                border-left: 2px solid white;
+                border-right: 2px solid white;
+                }
+
+                .Btn:hover .svgIcon {
+                fill: white;
+                animation: slide-in-top 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+                }
+
+                @keyframes slide-in-top {
+                0% {
+                    transform: translateY(-10px);
+                    opacity: 0;
+                }
+
+                100% {
+                    transform: translateY(0px);
+                    opacity: 1;
+                }
+                }
+        </style>
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3" href="index.html">DevOps Streamline</a>
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- Navbar Search-->
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                <div class="input-group">
+                    <!-- <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button> -->
+                </div>
+            </form>
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#!">Settings</a></li>
+                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="#!">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav" style="height: 174%;">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Core</div>
+                            <a class="nav-link" href="index.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Interface</div>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Project
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="layout-static.html">Deployment</a>
+                                    <a class="nav-link" href="layout-sidenav-light.html">Infrastrusture</a>
+                                </nav>
+                            </div>
+                            <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Pages
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Authentication
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="login.html">Login</a>
+                                            <a class="nav-link" href="register.html">Register</a>
+                                            <a class="nav-link" href="password.html">Forgot Password</a>
+                                        </nav>
+                                    </div>
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                                        Error
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="401.html">401 Page</a>
+                                            <a class="nav-link" href="404.html">404 Page</a>
+                                            <a class="nav-link" href="500.html">500 Page</a>
+                                        </nav>
+                                    </div>
+                                </nav>
+                            </div> -->
+                            <div class="sb-sidenav-menu-heading">Addons</div>
+                            <a class="nav-link" href="charts.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Profile
+                            </a>
+                            <a class="nav-link" href="tables.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Users
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Logged in as:</div>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Reports</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Reports</li>
+                        </ol>
+                        <h4 class="mt-1"><a href="" style="text-decoration: none;"></a></h4>
+                        <!-- <div class="card mb-4"> -->
+                            <!-- <div class="card-body">
+                                Chart.js is a third party plugin that is used to generate the charts in this template. The charts below have been customized - for further customization options, please visit the official
+                                <a target="_blank" href="https://www.chartjs.org/docs/latest/">Chart.js documentation</a>
+                                .
+                            </div> -->
+                        <!-- </div> -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>User Information</h2>
+                                <button class="Btn" id="downloadLink">
+                                    <svg
+                                      class="svgIcon"
+                                      viewBox="0 0 384 512"
+                                      height="1em"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
+                                      ></path>
+                                    </svg>
+                                    <span class="icon2"></span>
+                                    <!-- <span class="tooltip"></span> -->
+                                  </button>                                  
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Name:</strong> {{ user_info.name }}</p>
+                                <p><strong>Projects:</strong> 
+                                    <ul>
+                                        {% for project in user_info.projects.all %}
+                                            <li>{{ project.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </p>
+                                <p><strong>CI/CD Jobs:</strong> 
+                                    <ul>
+                                        {% for job in user_info.cicd_jobs.all %}
+                                            <li>{{ job.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </p>
+                                <p><strong>Servers:</strong> 
+                                    <ul>
+                                        {% for server in user_info.servers.all %}
+                                            <li>{{ server.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </p>
+                            </div>
+                        </div>
+                        <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; DevOps StreamLine 2024</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="js/scripts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="assets/demo/chart-area-demo.js"></script>
+        <script src="assets/demo/chart-bar-demo.js"></script>
+        <script src="assets/demo/chart-pie-demo.js"></script>
+
+        <script>
+            document.getElementById('downloadLink').addEventListener('click', function() {
+            const data = {
+                name: '{{ user_info.name }}',
+                projects: [
+                    {% for project in user_info.projects.all %}
+                        '{{ project.name }}',
+                    {% endfor %}
+                ],
+                ciCdJobs: [
+                    {% for job in user_info.cicd_jobs.all %}
+                        '{{ job.name }}',
+                    {% endfor %}
+                ],
+                servers: [
+                    {% for server in user_info.servers.all %}
+                        '{{ server.name }}',
+                    {% endfor %}
+                ]
+            };
+
+            const fileName = 'user-info.txt';
+            let fileContent = `Name: ${data.name}\nProjects:\n`;
+            data.projects.forEach(project => {
+                fileContent += ` - ${project}\n`;
+            });
+            fileContent += 'CI/CD Jobs:\n';
+            data.ciCdJobs.forEach(job => {
+                fileContent += ` - ${job}\n`;
+            });
+            fileContent += 'Servers:\n';
+            data.servers.forEach(server => {
+                fileContent += ` - ${server}\n`;
+            });
+
+            const blob = new Blob([fileContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+        </script>
+    </body>
+</html>

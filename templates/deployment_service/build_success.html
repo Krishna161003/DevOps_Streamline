@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <title></title>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <!-- <link href="{% static 'styles/main.css' %}" rel="stylesheet"/> -->
+         <style>
+            .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 600px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            margin: 0;
+        }
+
+        .card-body ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .card-body ul li {
+            background-color: #f9f9f9;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+            .Btn {
+                padding: 10px;
+                width: 50px;
+                height: 50px;
+                border: none;
+                border-radius: 50%;
+                background-color: white;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                position: relative;
+                transition-duration: 0.3s;
+                }
+
+                .svgIcon {
+                fill: #2196f3;
+                }
+
+                .icon2 {
+                width: 18px;
+                height: 5px;
+                border-bottom: 2px solid #2196f3;
+                border-left: 2px solid #2196f3;
+                border-right: 2px solid #2196f3;
+                }
+
+                .tooltip {
+                position: absolute;
+                top: -50px;
+                opacity: 0;
+                background-color: rgb(12, 12, 12);
+                color: white;
+                padding: 10px 10px;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition-duration: 0.2s;
+                pointer-events: none;
+                letter-spacing: 0.5px;
+                }
+
+                .tooltip::before {
+                position: absolute;
+                content: "";
+                width: 10px;
+                height: 10px;
+                background-color: rgb(12, 12, 12);
+                background-size: 1000%;
+                background-position: center;
+                transform: rotate(45deg);
+                bottom: -5%;
+                transition-duration: 0.3s;
+                }
+
+                .Btn:hover .tooltip {
+                opacity: 1;
+                transition-duration: 0.3s;
+                }
+
+                .Btn:hover {
+                background-color: #01579b;
+                transition-duration: 0.3s;
+                }
+
+                .Btn:hover .icon2 {
+                border-bottom: 2px solid white;
+                border-left: 2px solid white;
+                border-right: 2px solid white;
+                }
+
+                .Btn:hover .svgIcon {
+                fill: white;
+                animation: slide-in-top 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+                }
+
+                @keyframes slide-in-top {
+                0% {
+                    transform: translateY(-10px);
+                    opacity: 0;
+                }
+
+                100% {
+                    transform: translateY(0px);
+                    opacity: 1;
+                }
+                }
+         </style>
+    </head>
+    <header>
+        <div class="sb-nav-fixed">
+            <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+                <!-- Navbar Brand-->
+                <a class="navbar-brand ps-3" href="{% url 'UserDash' %}">DevOps StreamLine</a>
+                    <!-- <a class="link"  href=" /index.html">Home</a> -->
+                <!-- Sidebar Toggle-->
+
+                <!-- Navbar Search-->
+                <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                    <!-- <div class="input-group">
+                        <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                        <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                    </div> -->
+                </form> 
+                <!-- Navbar-->
+                <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#!">Settings</a></li>
+                            <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item" href="startbootstrap-sb-admin-gh-pages\login.html">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div style="padding: 2%; width:70%; height: 89%; margin-left:3%; margin-right:10%;position:sticky; top:10%; ">
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item" ><a href="{% url 'UserDash' %}" style="color: black;">Main</a></li>
+            <li class="breadcrumb-item active">Job</li>
+        </ol>
+    
+        <div class="text-bg p-3 p-3 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style="background-color:#1de4a8; border-radius:8px; width:60%;margin-left:0px;color:aliceblue;font-weight:500;margin-top:5%;margin-bottom:20px;">Job Creation Successfull...</div>
+        <!-- <div><p>Server IP:</p><p>{{ip_address}}</p></div> -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Summary</h2>
+                <!-- <button class="Btn" id="downloadLink">
+                    <svg
+                      class="svgIcon"
+                      viewBox="0 0 384 512"
+                      height="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
+                      ></path>
+                    </svg>
+                    <span class="icon2"></span>
+                     <span class="tooltip"></span> 
+                  </button>                                   -->
+            </div>
+            <div class="card-body">
+                <p><strong>Jenkins URL:</strong>{{server_url}}</p>
+                <p><strong>Job Name:</strong>{{job_name}}</p>
+                <p><strong>GitHub Repo URL:</strong> {{github_url}}</p>
+                <p><strong>Username:</strong> {{ username }}</p>
+            </div>
+        </div>
+        <!-- <div><p>Server ID:</p><p>{{instance_id}}</p></div> -->
+        <!-- <form method="post" style="margin-bottom: 20px;">
+            {% csrf_token %}
+            <label class="mb-2">___________________________________________________________________________________________________________</label><br>
+            <div class="text-overlay">
+                <p ><span style="font-size:xx-large;">Jenkins Installation</span></p>
+            </div>
+             Automatic 
+            <div class="text-overlay">
+                <p ><span style="font-size:x-large;">Automatic Installation</span></p>
+            </div>
+            <label class="mb-2" style="font-weight: 500;">Enter The Server IP</label>
+            <div class="input-group mb-3" style="width: 30%;">
+                <input type="text" class="form-control" name="ipaddress"  placeholder="Ipaddress" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <button type="submit" id="installbtn" class="btn btn-primary">Install Jenkins</button>
+        </form>     -->
+        <!-- Manual  -->
+    <div id="loader" class="loaders" style="display: none;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    
+    <style>
+        .loaders {
+            position: relative;
+            width: 2.5em;
+            height: 2.5em;
+            transform: rotate(165deg);
+           }
+           
+           .loaders:before, .loaders:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            display: block;
+            width: 0.5em;
+            height: 0.5em;
+            border-radius: 0.25em;
+            transform: translate(-50%, -50%);
+           }
+           
+           .loaders:before {
+            animation: before8 2s infinite;
+           }
+           
+           .loaders:after {
+            animation: after6 2s infinite;
+           }
+           
+           @keyframes before8 {
+            0% {
+             width: 0.5em;
+             box-shadow: 1em -0.5em rgba(225, 20, 98, 0.75), -1em 0.5em rgba(111, 202, 220, 0.75);
+            }
+           
+            35% {
+             width: 2.5em;
+             box-shadow: 0 -0.5em rgba(225, 20, 98, 0.75), 0 0.5em rgba(111, 202, 220, 0.75);
+            }
+           
+            70% {
+             width: 0.5em;
+             box-shadow: -1em -0.5em rgba(225, 20, 98, 0.75), 1em 0.5em rgba(111, 202, 220, 0.75);
+            }
+           
+            100% {
+             box-shadow: 1em -0.5em rgba(225, 20, 98, 0.75), -1em 0.5em rgba(111, 202, 220, 0.75);
+            }
+           }
+           
+           @keyframes after6 {
+            0% {
+             height: 0.5em;
+             box-shadow: 0.5em 1em rgba(61, 184, 143, 0.75), -0.5em -1em rgba(233, 169, 32, 0.75);
+            }
+           
+            35% {
+             height: 2.5em;
+             box-shadow: 0.5em 0 rgba(61, 184, 143, 0.75), -0.5em 0 rgba(233, 169, 32, 0.75);
+            }
+           
+            70% {
+             height: 0.5em;
+             box-shadow: 0.5em -1em rgba(61, 184, 143, 0.75), -0.5em 1em rgba(233, 169, 32, 0.75);
+            }
+           
+            100% {
+             box-shadow: 0.5em 1em rgba(61, 184, 143, 0.75), -0.5em -1em rgba(233, 169, 32, 0.75);
+            }
+           }
+           
+           .loaders {
+            position: absolute;
+            top: calc(50% - 1.25em);
+            left: calc(50% - 1.25em);
+           }  
+    </style>
+
+</html>

@@ -1,0 +1,13 @@
+Django>=3.2,<4.0
+django
+django-environ
+whitenoise
+boto3
+paramiko
+python-jenkins
+jenkins-job-builder
+python-git
+django-channels 
+channels
+docker
+docker-compose

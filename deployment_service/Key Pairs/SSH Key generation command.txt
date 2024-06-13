@@ -1,0 +1,3 @@
+SSH Key generation command
+
+ssh-keygen -t rsa -b 2048 -f my-key-pair.pem
