@@ -9,6 +9,7 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update && apt-get install -y \
     nginx \
     curl \
+    docker-compose \
     && apt-get clean 
 
 # Install Docker Compose
