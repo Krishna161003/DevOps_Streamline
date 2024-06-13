@@ -28,5 +28,8 @@ COPY ./myproject_nginx.conf /etc/nginx/sites-available/default
 # Expose port
 EXPOSE 80
 
+# Set environment variable for Django settings module
+ENV DJANGO_SETTINGS_MODULE=DevOps_Streamline.settings
+
 # Start server
 CMD ["./start.sh"]
