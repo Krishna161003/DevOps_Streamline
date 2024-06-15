@@ -1,4 +1,4 @@
-# Base image
+# Use the official Python image from the Docker Hub
 FROM python:3.9-slim
 
 # Set environment variables
@@ -7,35 +7,30 @@ ENV PYTHONUNBUFFERED 1
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    nginx \
+    apache2 \
     curl \
     docker-compose \
-    && apt-get clean 
+    && apt-get clean
 
-# Install Docker Compose
-RUN curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
-    && chmod +x /usr/local/bin/docker-compose
-
-# Set work directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Install Python dependencies
+# Copy the requirements.txt file into the container at /app
 COPY requirements.txt /app/
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
 
-# Copy project
+# Install any dependencies specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code into the container
 COPY . /app/
 
-# Configure Nginx
-COPY ./nginx.conf /etc/nginx/nginx.conf
-COPY ./myproject_nginx.conf /etc/nginx/sites-available/default
+# Create a volume for Apache configuration
+VOLUME /usr/local/apache2/conf
 
-# Expose port
+COPY httpd.conf /usr/local/apache2/conf/httpd.conf
+
+# Expose port 80 for Apache
 EXPOSE 80
 
-# Set environment variable for Django settings module
-ENV DJANGO_SETTINGS_MODULE=DevOps_Streamline.settings
-
-# Start server
-CMD ["./start.sh"]
+# Run a command to start Apache when the container starts
+CMD ["apache2ctl", "-D", "FOREGROUND"]
