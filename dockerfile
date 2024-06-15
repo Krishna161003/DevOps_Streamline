@@ -36,5 +36,7 @@ EXPOSE 80
 # Set environment variable for Django settings module
 ENV DJANGO_SETTINGS_MODULE=DevOps_Streamline.settings
 
+RUN chmod +x /app/start.sh
+
 # Start server
 CMD ["./start.sh"]
