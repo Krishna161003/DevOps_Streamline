@@ -1,42 +1,52 @@
-# Base image
-FROM python:3.9-slim
+# Stage 1: Build the Python application
+FROM python:3.9-alpine as web
 
-# Set environment variables
+# Setting up the work directory
+WORKDIR /home/app/
+
+# Preventing python from writing pyc to docker container
 ENV PYTHONDONTWRITEBYTECODE 1
+
+# Flushing out python buffer
 ENV PYTHONUNBUFFERED 1
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    nginx \
-    curl \
-    docker-compose \
-    && apt-get clean
+# Updating the OS
+RUN apt update
 
-# Install Docker Compose
-RUN curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
-    && chmod +x /usr/local/bin/docker-compose
-# Set work directory
-WORKDIR /app
+RUN apt install docker-compose
 
-# Install Python dependencies
-COPY requirements.txt /app/
+# Installing dependencies
+RUN apt install python3-dev
+
+# Copying requirement file
+COPY ./requirements.txt ./
+
+# Upgrading pip version
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
 
-# Copy project
-COPY . /app/
+# Installing dependencies
+RUN pip install gunicorn
 
-# Configure Nginx
-COPY ./nginx.conf /etc/nginx/nginx.conf
-COPY ./myproject_nginx.conf /etc/nginx/sites-available/default
+# Installing dependencies
+RUN pip install --no-cache-dir -r ./requirements.txt
 
-# Expose port
-EXPOSE 80
+# Copying all the files in our project
+COPY . .
 
-# Set environment variable for Django settings module
-ENV DJANGO_SETTINGS_MODULE=DevOps_Streamline.settings
+# Stage 2: Set up Nginx
+FROM nginx:1.23-alpine
 
-RUN chmod +x /app/start.sh
+# Removing default nginx.conf
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Start server
-CMD ["./start.sh"]
+# Copying our nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/
+
+# Copying static files from the Python build stage
+#COPY --from=web /home/app /usr/share/nginx/html
+
+# Exposing the port for Nginx
+#EXPOSE 80
+
+# Starting Nginx
+#CMD ["nginx", "-g", "daemon off;"]
