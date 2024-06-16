@@ -1,27 +1,22 @@
-# Stage 1: Build the Django application
-FROM python:3.9-slim AS django
+# Dockerfile
+FROM python:3.9
 
-# Setting up the work directory
-WORKDIR /home/app/DevOps_Streamline/
-
-# Preventing python from writing pyc to docker container
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Update the package list and install required packages
-RUN apt update && apt install -y python3-pip
+# Set working directory
+WORKDIR /app
 
-# Copying requirement file
-COPY requirements.txt ./
-
-# Upgrading pip version
-RUN pip install --upgrade pip
-
-# Installing dependencies
+# Install dependencies
+COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Installing gunicorn
-RUN pip install gunicorn
+# Copy project
+COPY . /app/
 
-# Copying all the files in our project
-COPY . .
+# Expose the port the app runs on
+EXPOSE 8000
+
+# Command to run on container start
+CMD ["gunicorn", "DevOps_Streamline.wsgi:application", "--bind", "0.0.0.0:8000"]
