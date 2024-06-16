@@ -13,7 +13,7 @@ services:
     build:
       context: ./nginx
     ports:
-      - "8001:80"  # Map port 8001 on the host to port 80 in the container
+      - "8002:80"  # Map port 8001 on the host to port 80 in the container
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - static_volume:/app/static
