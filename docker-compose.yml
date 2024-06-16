@@ -1,46 +1,24 @@
 version: '3.9'
-# Defining the compose version
-services:
 
- # Nginx server
- nginx:
- 
-   # Build context
-   build: ./nginx
-   
-   # Mapping machine and container ports
-   ports:
-     - 1337:80
-     
-   # Storage volumes
-   volumes:
-     - static_volume:/home/app/DevOps_Streamline/staticfiles
-     - media_volume:/home/app/DevOps_Streamline/mediafiles
-   depends_on:
-     - DevOps_Streamline
-   restart: "on-failure"
-   
- # Django application
- web:
- 
-   # Build context
-   build: ./
-   
-   # Build commands
-   command: sh -c "python manage.py makemigrations &&
-                   python manage.py migrate &&
-                   python manage.py collectstatic &&
-                   gunicorn DevOps_Streamline.wsgi:application --bind 0.0.0.0:8000"
-                   
-   # Storage volumes
-   volumes:
-     - static_volume:/home/app/DevOps_Streamline/staticfiles
-     - media_volume:/home/app/DevOps_Streamline/mediafiles
-     
-   # Exposing port 8000
-   expose: 
-   - 8000
-   restart: "on-failure"
+services:
+  web:
+    build: .
+    command: gunicorn DevOps_Streamline.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/app/static
+    environment:
+      - DJANGO_SETTINGS_MODULE=your_project_name.settings
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "8001:80"  # Map port 8001 on the host to port 80 in the container
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - static_volume:/app/static
+    depends_on:
+      - web
+
 volumes:
- static_volume:
- media_volume:
+  static_volume:
