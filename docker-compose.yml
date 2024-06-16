@@ -7,7 +7,7 @@ services:
     volumes:
       - static_volume:/app/static
     environment:
-      - DJANGO_SETTINGS_MODULE=your_project_name.settings
+      - DJANGO_SETTINGS_MODULE=DevOps_Streamline.settings
 
   nginx:
     build:
