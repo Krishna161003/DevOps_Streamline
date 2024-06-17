@@ -210,14 +210,14 @@
         <div class="card-body">
         <div class="text-overlay">
             <!-- <p><span style="font-size:x-large;">Interact with your Server </span></p> -->
-            <a href="/deployment_service/Key Pairs/my-key-pair.pem" download="filename.pem">Download .pem File and Run the below command in GitBash</a><br>
+            <a href="{% static 'download/my-key-pair.pem' %}" download="filename.pem">Download .pem File and Run the below command in GitBash</a><br>
             <label class="mb-2">In CMD(Command Prompt):ssh -i /path/to/your/key.pem user@server_ip</label><br>
             <label class="mb-1">user:ubuntu</label><br>
-            <label class="mb-2" style="font-weight: 500;">Refer This Document</label><br>
-            <a href="https://pkg.origin.jenkins.io/" class="btn btn-primary mb-2" download="downloaded-document.pdf">Click Here</a>
+            <!-- <label class="mb-2" style="font-weight: 500;">Refer This Document</label><br> -->
+            <!-- <a href="https://pkg.origin.jenkins.io/" class="btn btn-primary mb-2" download="downloaded-document.pdf">Click Here</a> -->
         </div>    
         <p>
-            <a href="#" class="link-primary" style="margin-left:1.3px; color:black;">Back to home</a>
+            <a href="{% url 'Userdeploy'%}" class="link-primary" style="margin-left:1.3px; color:black;">Back to home</a>
         </p>
     </div>
         </div>

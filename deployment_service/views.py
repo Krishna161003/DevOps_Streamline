@@ -52,6 +52,26 @@ def Userprofile(request):
   template = loader.get_template('deployment_service/userprofile.html')
   return HttpResponse(template.render())
 
+def Userdeploy(request):
+  template = loader.get_template('deployment_service/userdeploy.html')
+  return HttpResponse(template.render())
+
+def Userd(request):
+  template = loader.get_template('deployment_service/usersd.html')
+  return HttpResponse(template.render())
+
+def Userproject(request):
+  template = loader.get_template('deployment_service/userproject.html')
+  return HttpResponse(template.render())
+
+def Userstatic(request):
+  template = loader.get_template('deployment_service/userstatic.html')
+  return HttpResponse(template.render())
+
+def Userapp(request):
+  template = loader.get_template('deployment_service/userapp.html')
+  return HttpResponse(template.render())
+
 def landing(request):
   template = loader.get_template('deployment_service/land.html')
   return HttpResponse(template.render())
@@ -92,9 +112,42 @@ def terraform(request):
   template = loader.get_template('deployment_service/deploy_forms/terraform.html')
   return HttpResponse(template.render())
 
+def jenkinss(request):
+  template = loader.get_template('deployment_service/deploy_forms/jenkins.html')
+  return HttpResponse(template.render())
+
 def infra(request):
   template = loader.get_template('deployment_service/infrastructure.html')
   return HttpResponse(template.render())
+
+def email(request):
+  template = loader.get_template('deployment_service/email.html')
+  return HttpResponse(template.render())
+
+from django.core.mail import send_mail
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+def send_email_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        recipient = data['recipient']
+        subject = data['subject']
+        message = data['message']
+
+        send_mail(
+            subject,
+            message,
+            'your_email@example.com',  # Replace with your email
+            [recipient],
+            fail_silently=False,
+        )
+        return JsonResponse({'message': 'Email sent successfully!'})
+
+    return render(request, 'send_email.html')
+
 
 
 #Server Creation
@@ -139,8 +192,8 @@ def deploy_ec2(request):
             terraform_config = f"""
             provider "aws" {{
                 region     = "{region}"
-                access_key = "AKIAUZ7LQVC6Z2H3X3HA"
-                secret_key = "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"
+                access_key = "AKIAQ3EGSEGADV27GFEF"
+                secret_key = "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"
             }}
 
             resource "aws_key_pair" "my_key_pair_{idx}" {{
@@ -205,7 +258,7 @@ def deploy_ec2(request):
             resource "aws_security_group" "instance_sg_{idx}" {{
                 name        = "instance_sg"
                 description = "Security group for the EC2 instance"
-                vpc_id      = "vpc-098aba3da65b9810e"  # Specify your VPC ID here
+                vpc_id      = "vpc-0d656619004328e99"  # Specify your VPC ID here
 
                 ingress {{
                     from_port   = 80
@@ -630,64 +683,120 @@ def install_terraform(request):
          stdin, stdout, stderr = ssh_client.exec_command(command)
          print(stdout.read().decode('utf-8'))
 
-#terraform
-from django.http import JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-import paramiko
-import tempfile
+          # Close the SSH connection
+     ssh_client.close()
 
+     return HttpResponse("Installation completed successfully!")
+#jenkins
 @csrf_exempt
-def docker_deploy(request):
+def install_jenkins(request):
     if request.method == 'POST':
-        github_url = request.POST.get('githubURL')
-        job_name = request.POST.get('job-name')
+        ip_address = request.POST.get('ipaddress')
+        username = request.POST.get('username')
+        key_file = request.FILES.get('keypair')
 
-        if not github_url or not job_name:
-            return JsonResponse({"status": "error", "message": "Missing required parameters."}, status=400)
+        if not key_file:
+            return HttpResponse("No key pair uploaded.", status=400)
 
-        # SSH configuration
-        key_file_path = 'C:/Key Pairs/my-key-pair.pem'
-        hostname = 'your-server-ip'  # Add your server IP address here
+        # Create a temporary file to save the uploaded key pair
+        with tempfile.NamedTemporaryFile(delete=False) as temp_key_file:
+            for chunk in key_file.chunks():
+                temp_key_file.write(chunk)
+            key_file_path = temp_key_file.name
+
         port = 22
-        username = 'DevOps0987'
-
-        # Establish SSH connection
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            ssh_client.connect(hostname=hostname, port=port, username=username, key_filename=key_file_path)
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": f"SSH connection failed: {str(e)}"}, status=500)
+        ssh_client.connect(hostname=ip_address, port=port, username=username, key_filename=key_file_path)
 
-       # Extract the repository name from the GitHub URL
-        repo_name = github_url.split('/')[-1].replace('.git', '')
-
+        # Execute commands to install Jenkins
         commands = [
             'sudo apt update',
-            f'sudo mkdir -p /home/ubuntu/docker/{job_name}',
-            f'cd /home/ubuntu/docker/{job_name}',
-            f'git clone {github_url}',
-            f'cd {repo_name}',  # Navigate into the cloned repository directory
-            'sudo docker-compose up -d --build'
+            'sudo apt install curl',
+            'curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee \
+                    /usr/share/keyrings/jenkins-keyring.asc > /dev/null',
+            'echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+                    https://pkg.jenkins.io/debian-stable binary/ | sudo tee -a \
+                    /etc/apt/sources.list.d/jenkins.list > /dev/null',
+            'sudo apt-get update',
+            'sudo apt-get install -y openjdk-17-jdk',
+            'sudo apt-get install -y jenkins',
+            'sudo systemctl start jenkins',
+            'sudo systemctl enable jenkins',
         ]
 
+        for command in commands:
+            stdin, stdout, stderr = ssh_client.exec_command(command)
+            print(stdout.read().decode('utf-8'))
 
-        try:
-            for command in commands:
-                stdin, stdout, stderr = ssh_client.exec_command(command)
-                output = stdout.read().decode('utf-8')
-                error = stderr.read().decode('utf-8')
-                if error:
-                    return JsonResponse({"status": "error", "message": f"Command '{command}' failed: {error}"}, status=500)
-                print(output)
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": f"Command execution failed: {str(e)}"}, status=500)
-        finally:
-            ssh_client.close()
+        # Close the SSH connection
+        ssh_client.close()
 
-        return JsonResponse({"status": "success", "message": "Installation completed successfully!"})
-    else:
-        return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
+        return HttpResponse("Installation completed successfully!")
+
+    return HttpResponse("Invalid request method.", status=405)
+
+#deployapp
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# import paramiko
+
+# @csrf_exempt
+# def docker_deploy(request):
+#     if request.method == 'POST':
+#         github_url = request.POST.get('githubURL')
+#         job_name = request.POST.get('job-name')
+
+#         if not github_url or not job_name:
+#             return JsonResponse({"status": "error", "message": "Missing required parameters."}, status=400)
+
+#         # SSH configuration
+#         key_file_path = 'C:/Key Pairs/dockerserver.pem'
+#         hostname = '54.159.14.171'  # Add your server IP address here
+#         port = 22
+#         username = 'ubuntu'
+
+#         # Establish SSH connection
+#         ssh_client = paramiko.SSHClient()
+#         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#         try:
+#             ssh_client.connect(hostname=hostname, port=port, username=username, key_filename=key_file_path)
+#         except Exception as e:
+#             return JsonResponse({"status": "error", "message": f"SSH connection failed: {str(e)}"}, status=500)
+
+#         # Extract the repository name from the GitHub URL
+#         repo_name = github_url.split('/')[-1].replace('.git', '')
+
+#         commands = [
+#             f'sudo mkdir -p /home/ubuntu/docker/{job_name}',
+#             f'cd /home/ubuntu/docker/{job_name}',
+#             f'sudo rm -rf {repo_name}',  # Remove the existing directory if it exists
+#             f'sudo git clone {github_url}',
+#             f'sudo cd {repo_name}',  # Navigate into the cloned repository directory
+#             'sudo docker-compose up -d --build'
+#         ]
+
+#         try:
+#             for command in commands:
+#                 stdin, stdout, stderr = ssh_client.exec_command(command)
+#                 output = stdout.read().decode('utf-8')
+#                 error = stderr.read().decode('utf-8')
+#                 if error:
+#                     error_message = f"Command '{command}' failed: {error.strip()}"
+#                     # Additional logging for debugging
+#                     print(f"Error: {error_message}")
+#                     print(f"Output: {output.strip()}")
+#                     return JsonResponse({"status": "error", "message": error_message}, status=500)
+#                 print(output)
+#         except Exception as e:
+#             return JsonResponse({"status": "error", "message": f"Command execution failed: {str(e)}"}, status=500)
+#         finally:
+#             ssh_client.close()
+
+#         return JsonResponse({"status": "success", "message": "Installation completed successfully!"})
+#     else:
+#         return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
+
 
 
 import jenkins
@@ -795,7 +904,7 @@ def build_job(request):
 
     return HttpResponse("Unsuccessful!", status=400)
 
-    
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import requests
@@ -814,54 +923,48 @@ def docker_deploy(request):
 
         username = 'DevOps0987'
         api_token = '0987'
-        server_ip = '3.90.210.189'
+        server_ip = '107.20.48.167'
 
-        pipeline_script = f"""
-        pipeline {{
-            agent any
-            stages {{
-                stage('Checkout') {{
-                    steps {{
-                        git url: '{github_url}', branch: 'main'
-                    }}
-                }}
-                stage('Build Docker Image') {{
-                    steps {{
-                        sh 'sudo docker build -t {job_name}/devopsstreamline .'
-                    }}
-                }}
-                stage('Deploy with Docker Compose') {{
-                    steps {{
-                        script {{
-                            try {{
-                                sh 'sudo docker-compose down'
-                            }} catch (Exception e) {{
-                                echo 'docker-compose down failed, possibly because there was no running container'
-                            }}
-                            sh 'sudo docker-compose up -d'
-                        }}
-                    }}
-                }}
-            }}
-        }}
-        """
 
         job_config = f"""<?xml version='1.1' encoding='UTF-8'?>
-        <flow-definition plugin="workflow-job@2.40">
+        <project>
             <actions/>
-            <description>Pipeline job to deploy Django project from GitHub repository</description>
+            <description>Job to deploy Django project from GitHub repository</description>
             <keepDependencies>false</keepDependencies>
             <properties/>
-            <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.93">
-                <script>{pipeline_script}</script>
-                <sandbox>true</sandbox>
-            </definition>
-            <triggers>
+            <scm class="hudson.plugins.git.GitSCM" plugin="git@4.8.2">
+                <configVersion>2</configVersion>
+                <userRemoteConfigs>
+                    <hudson.plugins.git.UserRemoteConfig>
+                        <url>{github_url}</url>
+                    </hudson.plugins.git.UserRemoteConfig>
+                </userRemoteConfigs>
+                <branches>
+                    <hudson.plugins.git.BranchSpec>
+                        <name>*/main</name>
+                    </hudson.plugins.git.BranchSpec>
+                </branches>
+                <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+                <submoduleCfg class="list"/>
+                <extensions/>
+            </scm>
+             <triggers>
                 <hudson.triggers.SCMTrigger>
                     <spec>* * * * *</spec>
                 </hudson.triggers.SCMTrigger>
             </triggers>
-        </flow-definition>
+            <builders>
+                <hudson.tasks.Shell>
+                    <command>
+                        sudo docker build -t {job_name}/devopsstreamline .
+                        sudo docker-compose down || true
+                        sudo docker-compose up -d
+                    </command>
+                </hudson.tasks.Shell>
+            </builders>
+            <publishers/>
+            <buildWrappers/>
+        </project>
         """
 
         server_url = f"http://{server_ip}:8080"
@@ -880,7 +983,7 @@ def docker_deploy(request):
         try:
             jenkins_server = jenkins.Jenkins(server_url, username=username, password=api_token)
             
-            # Create or update the pipeline job
+            # Create or update the freestyle job
             if jenkins_server.job_exists(job_name):
                 print(f"Job '{job_name}' already exists. Reconfiguring it.")
                 jenkins_server.reconfig_job(job_name, job_config)
@@ -914,8 +1017,6 @@ def docker_deploy(request):
         return JsonResponse(response_data)
 
     return JsonResponse({"status": "error", "message": "Invalid request method"})
-
-
 
 
 

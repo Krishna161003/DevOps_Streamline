@@ -5,7 +5,9 @@ services:
     build: .
     command: gunicorn DevOps_Streamline.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - static_volume:/app/static
+      - .:/app
+    ports:
+      - "8000:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=DevOps_Streamline.settings
 

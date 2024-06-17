@@ -11,4 +11,3 @@ django-channels
 channels
 docker
 docker-compose
-gunicorn

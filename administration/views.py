@@ -8,70 +8,60 @@ from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 # from django.views.decorators.csrf import requires_csrf_token
-from django.contrib.auth import login, authenticate
-
-@method_decorator(csrf_exempt, name='dispatch')
-@csrf_exempt
-@csrf_protect
-def error_401(request):
-  template = loader.get_template('401.html')
-  return HttpResponse(template.render())
-
-def error_404(request):
-  template = loader.get_template('404.html')
-  return HttpResponse(template.render())
-
-def error_500(request):
-  template = loader.get_template('500.html')
-  return HttpResponse(template.render())
-
-def charts(request):
-  template = loader.get_template('administration/charts.html')
-  return HttpResponse(template.render())
+from django.contrib.auth import login, authenticate , logout
+from django.contrib.auth.models import auth
+from administration.forms import LoginForm, RegistrationForm
+from django.shortcuts import render
+from django.contrib import messages
 
 def dashboard(request):
   template = loader.get_template('administration/dashboard.html')
   return HttpResponse(template.render())
 
-def layout_sidenav_light(request):
-  template = loader.get_template('layout-sidenav-light.html')
-  return HttpResponse(template.render())
 
-def layout_static(request):
-  template = loader.get_template('layout-static.html')
-  return HttpResponse(template.render())
 
-@csrf_exempt
 def login(request):
-  template = loader.get_template('registration/login.html')
-  return HttpResponse(template.render())
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+            user = authenticate(request,email=email, password=password)
+            if user is not None:
+              auth.login(request, user)
+              return redirect('main')
+            else:   
+              messages.error(request, "Invalid username or password.")
+            
+    else:
+        form = LoginForm()
+    return render(request, 'registration/login.html', {'form': form})
 
 def password(request):
   template = loader.get_template('administration/password.html')
   return HttpResponse(template.render())
 
-def register(request):
-  template = loader.get_template('administration/register.html')
-  return HttpResponse(template.render())
 
 def tables(request):
   template = loader.get_template('administration/tables.html')
+  return HttpResponse(template.render())
+
+
+def reports(request):
+  template = loader.get_template('administration/reports.html')
+  return HttpResponse(template.render())
+
+
+def deplyments(request):
+  template = loader.get_template('administration/deplyments.html')
   return HttpResponse(template.render())
 
 def Users(request):
   template = loader.get_template('administration/Users.html')
   return HttpResponse(template.render())
 
-def reports(request):
-  template = loader.get_template('administration/reports.html')
-  return HttpResponse(template.render())
-
-def projects(request):
-  template = loader.get_template('administration/project.html')
-  return HttpResponse(template.render())
-
-def deplyments(request):
-  template = loader.get_template('administration/deplyments.html')
+def admininfra(request):
+  template = loader.get_template('administration/admininfra.html')
   return HttpResponse(template.render())
 
 
@@ -79,38 +69,22 @@ def deplyments(request):
 
 
 
-from django.shortcuts import render
-from .forms import LoginForm, RegistrationForm, SignUpForm
-from django.contrib import messages
 
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            # Process the data in form.cleaned_data
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            # Perform login logic here (e.g., authenticate user)
-            messages.success(request, 'Login successful!')
-            return render(request, 'main.html', {'form': form})
-    else:
-        form = LoginForm()
-        return render(request, 'main.html', {'form': form})
 
-@csrf_exempt
+
+    
+
+
 def registers(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return render(request, 'templates/index.html', {})  # Replace 'home' with the name of your homepage URL pattern
+            messages.success(request, 'Your account has been created ! You are now able to log in')
+            return redirect('login')  # Replace 'home' with the name of your homepage URL pattern
     else:
         form = RegistrationForm()
-        return render(request, 'register.html', {'form': form})
+    return render(request, 'administration/register.html',{'form':form})
 
 import boto3 
 import datetime
