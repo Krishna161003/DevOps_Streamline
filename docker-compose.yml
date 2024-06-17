@@ -21,6 +21,3 @@ services:
       - static_volume:/app/static
     depends_on:
       - web
-
-volumes:
-  static_volume:
